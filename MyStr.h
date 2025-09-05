@@ -11,6 +11,14 @@ char * MyStrCat(char * dest, const char * src); // объединение стр
 
 char * MyStrNCat(char * dest, const char * src, const int n); //Объединение строк с контроем длины
 
-int MyAtoi(const char * str);
+int MyAtoi(const char * str); // Преобразует строку в число
+
+char * MyFGetS(char * str, int n, FILE * stream); // Получение строки из файла
+
+char * MyStrDup(const char * str); // Дублирует строку с выделением памяти
+
+int MyGetLine(char * * str_ptr, int * n, FILE * stream); 
+
+void MyClearInput(FILE * stream);
 
 #endif

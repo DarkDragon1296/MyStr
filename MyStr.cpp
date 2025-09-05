@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "MyStr.h"
 
 int MyPutS(const char * str)
@@ -24,7 +25,6 @@ char * MyStrChr(char * str, const char ch)
 
     while (true)
     {
-
         str++;
 
         if (*str == '\0')
@@ -77,3 +77,51 @@ int MyAtoi(const char * str)
     return result;
 }
 
+char * MyFGetS(char *str, int n, FILE * stream)
+{
+    char ch = fgetc(stream);
+    int i = 0;
+
+    if (ch == EOF)
+        return NULL;
+
+    while (ch != EOF && ch != '\0' && i < n)
+    {
+        str[i++] = ch;
+        ch = fgetc(stream);
+    }
+    
+    str[i] = '\0';
+
+    return str;
+}
+
+char * MyStrDup(const char * str)
+{
+    int str_len = MyStrLen(str);
+    int i = 0;
+    char * str_dup = (char *) calloc(str_len + 1, sizeof(char));
+
+    for (; str[i] != '\0'; i++)
+        str_dup[i] = str[i];
+
+    str_dup[i] = '\0';
+
+    return str_dup;
+}
+
+int MyGetLine(char ** str_ptr, int * n, FILE * stream)
+{
+    int result = 0;
+
+    *str_ptr = (char *)calloc(*n + 1, sizeof(char));
+
+    char * NULL_check = MyFGetS(*str_ptr, *n, stream);
+
+    if (NULL_check == NULL)
+        return -1;
+
+    result = MyStrLen(*str_ptr);
+
+    return result;
+}
