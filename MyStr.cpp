@@ -2,15 +2,21 @@
 #include <stdlib.h>
 #include "MyStr.h"
 
-int MyPutS(const char * str)
+int MyPutS(const char *str)
 {
-    int result = printf("%s", str);
-    result = result < 0 ? EOF : '\n';
+    int i = 0, result = 0;
+    while (str[i] != '\0' && str[i] != EOF)
+    {
+        int result = putchar(str[i]);
+        i++;
+    }
+
+    result = result == EOF ? EOF : i;
 
     return result;
 }
 
-int MyStrLen(const char * str)
+int MyStrLen(const char *str)
 {
     int i = 0;
 
@@ -20,21 +26,20 @@ int MyStrLen(const char * str)
     return i;
 }
 
-char * MyStrChr(char * str, const char ch)
+char * MyStrChr(char *str, const int ch)
 {
-
     while (true)
     {
-        str++;
-
         if (*str == '\0')
             return NULL;
         else if(*str == ch)
             return str;
+
+        str++;
     }
 }
 
-char * MyStrCat(char * dest, const char * src)
+char * MyStrCat(char *dest, const char *src)
 {
     int dest_len = MyStrLen(dest);
     int i = 0;
@@ -47,7 +52,7 @@ char * MyStrCat(char * dest, const char * src)
     return dest;
 }
 
-char * MyStrNCat(char * dest, const char * src, const int n)
+char * MyStrNCat(char *dest, const char *src, const int n)
 {
     int dest_len = MyStrLen(dest);
     int i = 0;
@@ -60,7 +65,7 @@ char * MyStrNCat(char * dest, const char * src, const int n)
     return dest;
 }
 
-int MyAtoi(const char * str)
+int MyAtoi(const char *str)
 {
     bool is_sign = (str[0] == '-'); // Получаем значение 
     int i = is_sign; // Начальный индекс строки. 0, если нет знака; 1, если знак есть
@@ -74,7 +79,7 @@ int MyAtoi(const char * str)
 
     result *= is_sign ? -1 : 1;
 
-    return result;
+    return result - 1;
 }
 
 char * MyFGetS(char *str, int n, FILE * stream)
@@ -96,13 +101,13 @@ char * MyFGetS(char *str, int n, FILE * stream)
     return str;
 }
 
-char * MyStrDup(const char * str)
+char * MyStrDup(const char *str)
 {
     int str_len = MyStrLen(str);
     int i = 0;
-    char * str_dup = (char *) calloc(str_len + 1, sizeof(char));
+    char *str_dup = (char *) calloc(str_len + 1, sizeof(char));
 
-    for (; str[i] != '\0'; i++)
+    for (; i < str_len; i++)
         str_dup[i] = str[i];
 
     str_dup[i] = '\0';
@@ -110,18 +115,63 @@ char * MyStrDup(const char * str)
     return str_dup;
 }
 
-int MyGetLine(char ** str_ptr, int * n, FILE * stream)
+int MyGetLine(char **str_ptr, int *n, FILE * stream) // TODO:  переделать
 {
-    int result = 0;
+    *str_ptr = (char *)calloc(*n, sizeof (char));
+    int ch = 0;
+    int i = 0;
 
-    *str_ptr = (char *)calloc(*n + 1, sizeof(char));
+    while (true)
+    {
+        printf("MEOW\n");
+        ch = getc(stream);
 
-    char * NULL_check = MyFGetS(*str_ptr, *n, stream);
+        if (ch == '\n')
+        {
+            char *temp = (char *)realloc(*str_ptr, (i + 2) * sizeof(char));
+        
+            (*n)++;
 
-    if (NULL_check == NULL)
-        return -1;
+            if (!temp)
+            {
+                (*str_ptr)[i] = '\n';
+                (*str_ptr)[i + 1] = '\0';
+                return i + 1;
+            }
 
-    result = MyStrLen(*str_ptr);
+            *str_ptr = temp;
 
-    return result;
+            break;
+        }
+        else if (ch == EOF)
+        {
+            char *temp = (char *)realloc(*str_ptr, *n);
+
+            if (!temp) {
+                (*str_ptr)[i] = '\0';
+                return -1;
+            }
+
+            *str_ptr = temp;
+
+            break;
+        }
+
+        if (i >= *n)
+        {
+            char *temp = (char *)realloc(*str_ptr, (i + 1) * sizeof(char));
+
+            if (!temp)
+                return -1;
+            
+            *str_ptr = temp;
+            
+            (*n)++;
+        }
+
+        (*str_ptr)[i] = ch;
+        i++;
+    }
+
+    return MyStrLen(*str_ptr);
 }
