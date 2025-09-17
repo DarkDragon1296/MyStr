@@ -115,58 +115,46 @@ char * MyStrDup(const char *str)
     return str_dup;
 }
 
-int MyGetLine(char **str_ptr, int *n, FILE * stream) // TODO:  переделать
+size_t MyGetLine(char **str_ptr, size_t *n, FILE * stream)
 {
-    *str_ptr = (char *)calloc(*n, sizeof (char));
+    char *str_ptr_check = NULL;
+    str_ptr_check = (char *)calloc(*n, sizeof (char));
+
+    if (str_ptr_check == NULL)
+        return 0;
+
+    *str_ptr = str_ptr_check;
+
     int ch = 0;
     int i = 0;
 
     while (true)
     {
-        printf("MEOW\n");
         ch = getc(stream);
+        
+        if (i >= *n - 2)
+        {
+            str_ptr_check = (char *)realloc(*str_ptr, *n * 2);
+
+            if (str_ptr_check == NULL)
+                break;
+
+            *n *= 2;
+            *str_ptr = str_ptr_check;
+        }
 
         if (ch == '\n')
         {
-            char *temp = (char *)realloc(*str_ptr, (i + 2) * sizeof(char));
-        
-            (*n)++;
-
-            if (!temp)
-            {
-                (*str_ptr)[i] = '\n';
-                (*str_ptr)[i + 1] = '\0';
-                return i + 1;
-            }
-
-            *str_ptr = temp;
+            (*str_ptr)[i] = '\n';
+            (*str_ptr)[i + 1] = '\0';
 
             break;
         }
         else if (ch == EOF)
         {
-            char *temp = (char *)realloc(*str_ptr, *n);
-
-            if (!temp) {
-                (*str_ptr)[i] = '\0';
-                return -1;
-            }
-
-            *str_ptr = temp;
+            (*str_ptr)[i] = '\0';
 
             break;
-        }
-
-        if (i >= *n)
-        {
-            char *temp = (char *)realloc(*str_ptr, (i + 1) * sizeof(char));
-
-            if (!temp)
-                return -1;
-            
-            *str_ptr = temp;
-            
-            (*n)++;
         }
 
         (*str_ptr)[i] = ch;

@@ -17,6 +17,6 @@ char * MyFGetS(char *str, int n, FILE *stream); // Получение строк
 
 char * MyStrDup(const char *str); // Дублирует строку с выделением памяти
 
-int MyGetLine(char **str_ptr, int *n, FILE * stream);
+size_t MyGetLine(char **str_ptr, size_t *n, FILE * stream);
 
 #endif
